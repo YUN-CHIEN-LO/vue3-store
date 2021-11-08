@@ -26,8 +26,9 @@ export default {
 .item {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 220px;
-  margin: 10px;
+  margin: 10px 0px;
   & img {
     width: 100%;
     margin-bottom: 10px;

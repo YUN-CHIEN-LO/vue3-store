@@ -1,13 +1,18 @@
 <template>
-  <div class="hello">
-    <item
-      v-for="x in list"
-      :key="x.sn"
-      :title="x.ProductName"
-      :price="x.Price"
-      :img="x.OutfitPic[0] ? x.OutfitPic[0] : ''"
+  <div class="main">
+    <img
+      src="https://s3.lativ.com.tw/i/NewArrivalBanner/54261_1010X400_211101_TW.jpg"
+      alt=""
     />
-    
+    <div class="main__item">
+      <item
+        v-for="x in list"
+        :key="x.sn"
+        :title="x.ProductName"
+        :price="x.Price"
+        :img="x.OutfitPic[0] ? x.OutfitPic[0] : ''"
+      />
+    </div>
   </div>
 </template>
 
@@ -17,7 +22,7 @@ import Item from "@/components/Item.vue";
 import { ref } from "@vue/runtime-core";
 import { concat, debounce } from "lodash";
 export default {
-  name: "HelloWorld",
+  name: "Main",
   components: { Item },
   props: {
     msg: String,
@@ -74,9 +79,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.hello {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+.main {
+  min-width: 820px;
+  & img {
+    width: 100%;
+  }
+  &__item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 }
 </style>
