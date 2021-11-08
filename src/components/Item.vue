@@ -1,8 +1,15 @@
 <template>
   <div class="item">
-    <img :src="'https://s1.lativ.com.tw/' + props.img" alt="" />
-    <p>{{ props.title }}</p>
-    <p>{{ props.price }}</p>
+    <img :src="'https://s1.lativ.com.tw/' + item.OutfitPic[0]" alt="" />
+    <p>{{ item.ProductName }}</p>
+    <p>
+      <span :class="{ 'is-activity': item.ActivityPrice > 0 }">
+        NT${{ item.Price }}
+      </span>
+      <span v-if="item.ActivityPrice > 0">
+        活動價 NT${{ item.ActivityPrice }}
+      </span>
+    </p>
   </div>
 </template>
 
@@ -10,9 +17,7 @@
 export default {
   name: "Item",
   props: {
-    title: String,
-    price: [String, Number],
-    img: String,
+    item: Object,
   },
   setup(props) {
     return {
@@ -23,18 +28,24 @@ export default {
 </script>
 
 <style lang="scss">
+@import "@/style.scss";
 .item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 220px;
+  width: 280px;
   margin: 10px 0px;
   & img {
     width: 100%;
     margin-bottom: 10px;
+    cursor: pointer;
   }
   & p {
     margin: 5px;
   }
+}
+
+.is-activity {
+  text-decoration: line-through;
 }
 </style>
