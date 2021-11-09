@@ -58,6 +58,12 @@ export default defineComponent({
       this.activeTab = x;
       this.$emit("change", x);
       this.$store.dispatch("setCatagory", x);
+      this.$router.push({
+        path: "/",
+        query: {
+          catagory: x,
+        },
+      });
     },
   },
 });

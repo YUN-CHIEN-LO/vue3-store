@@ -1,9 +1,8 @@
 <template>
   <div class="main">
-    {{getCatagory}}
     <img :src="banner[getCatagory]" alt="" />
     <div class="main__item">
-      <item v-for="x in list" :key="x.sn" :item="x" @click="$emit('view', x)" />
+      <item v-for="x in list" :key="x.sort" :item="x" @click="viewShop(x)" />
     </div>
   </div>
 </template>
@@ -60,6 +59,16 @@ export default {
     this.getLativ(this.getCatagory, this.pageIndex);
   },
   methods: {
+    viewShop(x) {
+      this.$router.push({
+        path: "/shop",
+        query: {
+          catagory: this.getCatagory,
+          id: x.ProductID,
+        },
+      });
+      this.$store.dispatch("setItem", x);
+    },
     /**
      * 當 scroll 時，更新 isScroll 狀態
      */
