@@ -1,6 +1,7 @@
 <template>
   <div class="main">
-    <img :src="banner[props.catagory]" alt="" />
+    {{getCatagory}}
+    <img :src="banner[getCatagory]" alt="" />
     <div class="main__item">
       <item v-for="x in list" :key="x.sn" :item="x" @click="$emit('view', x)" />
     </div>
@@ -12,6 +13,7 @@ import api from "@/api";
 import Item from "@/components/Item.vue";
 import { ref } from "@vue/runtime-core";
 import { concat, debounce } from "lodash";
+import { mapGetters } from "vuex";
 export default {
   name: "Main",
   components: { Item },
@@ -40,8 +42,11 @@ export default {
       banner,
     };
   },
+  computed: {
+    ...mapGetters(["getCatagory"]),
+  },
   watch: {
-    catagory(newVal) {
+    getCatagory(newVal) {
       this.list = [];
       this.pageIndex = 1;
       this.getLativ(newVal, this.pageIndex);
@@ -52,7 +57,7 @@ export default {
     this.$nextTick(() => {
       window.document.addEventListener("scroll", debounce(this.onScroll, 1000));
     });
-    this.getLativ(this.props.catagory, this.pageIndex);
+    this.getLativ(this.getCatagory, this.pageIndex);
   },
   methods: {
     /**
@@ -63,7 +68,7 @@ export default {
       let currentScroll = window.scrollY + window.innerHeight;
       let modifier = 200;
       if (currentScroll + modifier > documentHeight && !this.endFlag) {
-        this.getLativ(this.props.catagory, this.pageIndex++);
+        this.getLativ(this.getCatagory, this.pageIndex++);
       }
     },
     getLativ(mainCategory, pageIndex) {

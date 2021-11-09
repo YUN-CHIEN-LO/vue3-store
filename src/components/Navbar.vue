@@ -57,6 +57,7 @@ export default defineComponent({
     handleActive(x) {
       this.activeTab = x;
       this.$emit("change", x);
+      this.$store.dispatch("setCatagory", x);
     },
   },
 });
