@@ -4,18 +4,17 @@
       <div class="shop__cover__block">
         <img
           :src="
-            'https://s1.lativ.com.tw/' +
-            getItem.info[curColor].ItemList[0].img280
+            'https://s1.lativ.com.tw/' + item.info[curColor].ItemList[0].img280
           "
           alt=""
         />
       </div>
       <div class="shop__cover__block">
         <h2 class="shop__cover__row shop__title">
-          {{ getItem.ProductName }}
+          {{ item.ProductName }}
         </h2>
         <div class="shop__cover__row shop__price">
-          <span>{{ getItem.Price }}</span>
+          <span>{{ item.Price }}</span>
         </div>
         <hr />
         <div
@@ -23,7 +22,7 @@
           style="justify-content: flex-start"
         >
           <div
-            v-for="(x, id) in getItem.info"
+            v-for="(x, id) in item.info"
             :key="x.color"
             class="shop__color"
             :class="{ 'is-selected': id === curColor }"
@@ -34,7 +33,7 @@
         </div>
         <div class="shop__cover__row shop__size">
           <span
-            v-for="x in getItem.info[curColor].ItemList"
+            v-for="x in item.info[curColor].ItemList"
             :key="x.size"
             :class="{
               'is-disabled': x.invt === 0,
@@ -48,7 +47,7 @@
         <div class="shop__cover__row shop__tool">
           <div class="shop__tool__item">
             <el-icon class="shop__tool__icon"><chat-line-square /></el-icon>
-            評價({{getItem.commentCount}})
+            評價({{ item.commentCount }})
           </div>
           <div class="shop__tool__item">
             <el-icon class="shop__tool__icon"><crop /></el-icon>
@@ -79,10 +78,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import { defineComponent, ref } from "vue";
 import { ElIcon, ElInputNumber, ElButton } from "element-plus";
 import { ChatLineSquare, Crop, Star, Message } from "@element-plus/icons";
+import api from "@/api";
 export default defineComponent({
   name: "Shop",
   components: {
@@ -93,17 +92,42 @@ export default defineComponent({
     Crop,
     Star,
   },
-  computed: {
-    ...mapGetters(["getItem"]),
-  },
   setup() {
+    const item = ref({
+      ProductName: "",
+      Price: 0,
+      ActivityPrice: 0,
+      commentCount: "",
+      info: [
+        {
+          colorImg: "/images/logo-2011.png",
+          ItemList: [
+            {
+              img280: "/images/logo-2011.png",
+            },
+          ],
+        },
+      ],
+    });
     const curColor = ref(0);
     const curSize = ref("");
     const curNum = ref(1);
-    return { curColor, curSize, curNum, Message };
+    return { item, curColor, curSize, curNum, Message };
   },
   mounted() {
     this.selectSize();
+    api.lativ
+      .getProduct(this.$route.query)
+      .then((res) => {
+        if (!res.data.ProductName) {
+          this.$router.push("/error");
+        } else {
+          this.item = res.data;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
   methods: {
     selectColor(id) {
@@ -114,7 +138,7 @@ export default defineComponent({
       if (flag) return;
       if (val) this.curSize = val;
       else {
-        const target = this.getItem.info[this.curColor].ItemList[0];
+        const target = this.item.info[this.curColor].ItemList[0];
         this.curSize = target.invt === 0 ? "" : target.size;
       }
     },

@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <img :src="banner[getCatagory]" alt="" />
+    <img :src="banner[$route.query.catagory]" alt="" />
     <div class="main__item">
       <item v-for="x in list" :key="x.sort" :item="x" @click="viewShop(x)" />
     </div>
@@ -12,7 +12,6 @@ import api from "@/api";
 import Item from "@/components/Item.vue";
 import { ref } from "@vue/runtime-core";
 import { concat, debounce } from "lodash";
-import { mapGetters } from "vuex";
 export default {
   name: "Main",
   components: { Item },
@@ -41,33 +40,22 @@ export default {
       banner,
     };
   },
-  computed: {
-    ...mapGetters(["getCatagory"]),
-  },
-  watch: {
-    getCatagory(newVal) {
-      this.list = [];
-      this.pageIndex = 1;
-      this.getLativ(newVal, this.pageIndex);
-    },
-  },
   mounted() {
     // 掛載監聽事件
     this.$nextTick(() => {
       window.document.addEventListener("scroll", debounce(this.onScroll, 1000));
     });
-    this.getLativ(this.getCatagory, this.pageIndex);
+    this.getLativ(this.pageIndex);
   },
   methods: {
     viewShop(x) {
       this.$router.push({
         path: "/shop",
         query: {
-          catagory: this.getCatagory,
+          catagory: this.$route.query.catagory,
           id: x.ProductID,
         },
       });
-      this.$store.dispatch("setItem", x);
     },
     /**
      * 當 scroll 時，更新 isScroll 狀態
@@ -77,14 +65,15 @@ export default {
       let currentScroll = window.scrollY + window.innerHeight;
       let modifier = 200;
       if (currentScroll + modifier > documentHeight && !this.endFlag) {
-        this.getLativ(this.getCatagory, this.pageIndex++);
+        this.getLativ(this.pageIndex++);
       }
     },
-    getLativ(mainCategory, pageIndex) {
+    getLativ(pageIndex) {
       const _ = this;
+      const catagory = this.$route.query.catagory;
       api.lativ
         .getLativ({
-          mainCategory: mainCategory,
+          catagory: catagory,
           pageIndex: pageIndex,
         })
         .then((res) => {
