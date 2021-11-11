@@ -1,26 +1,36 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <el-container style="margin: 50px; min-width: 1200px">
+    <el-aside width="180px"> <Sidebar /></el-aside>
+    <el-container>
+      <el-header><Navbar /></el-header>
+      <el-main>
+        <router-view :key="$route.fullPath"></router-view>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Navbar from "@/components/Navbar.vue";
+import Sidebar from "@/components/Sidebar.vue";
+import { ElAside, ElContainer, ElHeader, ElMain } from "element-plus";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    Navbar,
+    Sidebar,
+    ElAside,
+    ElContainer,
+    ElHeader,
+    ElMain,
+  },
+};
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style lang="scss" scoped>
+body,
+html {
+  margin: 0;
 }
 </style>
