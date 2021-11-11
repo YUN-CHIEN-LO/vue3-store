@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <img :src="banner[$route.query.catagory]" alt="" />
+    <img :src="banner[defaultCatagory]" alt="" />
     <div class="main__item">
       <item v-for="x in list" :key="x.sort" :item="x" @click="viewShop(x)" />
     </div>
@@ -36,12 +36,16 @@ export default {
         "https://s3.lativ.com.tw/i/NewArrivalBanner/54032_1010X400_211108_TW.jpg",
     });
 
+    // 預設頁籤
+    const defaultCatagory = ref("WOMEN");
+
     return {
       props,
       list,
       pageIndex,
       endFlag,
       banner,
+      defaultCatagory,
     };
   },
   mounted() {
@@ -60,10 +64,12 @@ export default {
      */
     getLativ(pageIndex) {
       const _ = this;
-      const catagory = this.$route.query.catagory;
+      this.defaultCatagory = this.$route.query.catagory
+        ? this.$route.query.catagory
+        : "WOMEN";
       api.lativ
         .getLativ({
-          catagory: catagory,
+          catagory: _.defaultCatagory,
           pageIndex: pageIndex,
         })
         .then((res) => {
@@ -87,7 +93,7 @@ export default {
       this.$router.push({
         path: "/shop",
         query: {
-          catagory: this.$route.query.catagory,
+          catagory: this.defaultCatagory,
           id: x.ProductID,
         },
       });
