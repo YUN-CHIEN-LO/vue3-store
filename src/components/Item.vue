@@ -1,7 +1,10 @@
 <template>
   <div class="item">
+    <!-- 產品圖片 -->
     <img :src="'https://s1.lativ.com.tw/' + item.OutfitPic[0]" alt="" />
+    <!-- 產品名稱 -->
     <p>{{ item.ProductName }}</p>
+    <!-- 產品價格 -->
     <p>
       <span :class="{ 'is-activity': item.ActivityPrice > 0 }">
         NT${{ item.Price }}

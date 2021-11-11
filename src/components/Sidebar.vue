@@ -1,5 +1,6 @@
 <template>
   <div class="sidebar">
+    <!-- [TODO] sidebar 沒有互動事件 -->
     <div class="sidebar__logo">
       <img src="https://s3.lativ.com.tw/images/logo-2011.png" alt="" />
     </div>
@@ -27,12 +28,15 @@ export default defineComponent({
   components: { ElIcon, Menu, ArrowRight },
   setup() {
     const sidebar = ref([]);
+
+    // 取得sidebar內容
     const getSidebar = () => {
       api.lativ.getSidebar().then((res) => {
         sidebar.value = res.data;
       });
     };
     onMounted(getSidebar);
+    
     return {
       sidebar,
     };
@@ -50,7 +54,7 @@ export default defineComponent({
     color: $text-color;
     &:hover {
       text-decoration: underline;
-      color:$light-color;
+      color: $light-color;
     }
   }
   &__label {

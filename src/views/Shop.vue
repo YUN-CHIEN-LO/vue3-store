@@ -1,5 +1,6 @@
 <template>
   <div class="shop">
+    <!-- 加入購物車提示 -->
     <el-popover
       placement="bottom-end"
       :width="500"
@@ -26,8 +27,11 @@
         <el-button type="primary" :style="btnStyle">前往結帳</el-button>
       </div>
     </el-popover>
+
+    <!-- 產品頁 -->
     <div class="shop__cover">
       <div class="shop__cover__block">
+        <!-- 產品圖片 -->
         <img
           :src="
             'https://s1.lativ.com.tw/' + item.info[curColor].ItemList[0].img280
@@ -36,13 +40,20 @@
         />
       </div>
       <div class="shop__cover__block">
+        <!-- 產品名稱 -->
         <h2 class="shop__cover__row shop__title">
           {{ item.ProductName }}
         </h2>
+        <!-- 產品價格 -->
         <div class="shop__cover__row shop__price">
-          <span>{{ item.Price }}</span>
+          <span v-if="item.ActivityPrice === 0"> {{ item.Price }} </span>
+          <span v-if="item.ActivityPrice > 0" class="shop__price--activity">
+            <p>{{ item.Price }}</p>
+            {{ item.ActivityPrice }}
+          </span>
         </div>
         <hr />
+        <!-- 產品色號 -->
         <div
           class="shop__cover__row shop__color"
           style="justify-content: flex-start"
@@ -57,6 +68,7 @@
             <img :src="'https://s1.lativ.com.tw/' + x.colorImg" alt="" />
           </div>
         </div>
+        <!-- 產品尺寸 -->
         <div class="shop__cover__row shop__size">
           <span
             v-for="(x, id) in item.info[curColor].ItemList"
@@ -70,6 +82,7 @@
             {{ x.size }}
           </span>
         </div>
+        <!-- 其他工具 -->
         <div class="shop__cover__row shop__tool">
           <div class="shop__tool__item">
             <el-icon class="shop__tool__icon"><chat-line-square /></el-icon>
@@ -85,6 +98,7 @@
           </div>
         </div>
         <hr />
+        <!-- 加入購物車 -->
         <div class="shop__cover__row shop__cart">
           數量
           <el-input-number
@@ -125,6 +139,7 @@ export default defineComponent({
     Star,
   },
   setup() {
+    // 初始項目
     const item = ref({
       ProductName: "",
       Price: 0,
@@ -141,37 +156,51 @@ export default defineComponent({
         },
       ],
     });
+
+    // 暫存狀態
     const curColor = ref(0);
     const curSize = ref(0);
     const curNum = ref(1);
+
+    // 是否顯示購物車新增提示
     const toggleCart = ref(false);
+
+    // 自定義樣式
     const btnStyle = computed(() => ({
       margin: "10px 0px 10px auto",
       backgroundColor: "#724b3d",
       border: "none",
     }));
+
     return { item, curColor, curSize, curNum, toggleCart, btnStyle, Message };
   },
   mounted() {
     this.selectSize();
     const { catagory, id, color, size, number } = this.$route.query;
+
+    // 依照路由參數返回指定項目資訊
     api.lativ
       .getProduct({ catagory, id })
       .then((res) => {
         if (!res.data.ProductName) {
+          // 若項目條件不存在
           this.$router.push("/error");
         } else {
           this.item = res.data;
+
           const _ = this;
+          // 初始顏色
           if (color) {
             this.curColor = findIndex(_.item.info, (x) => x.color === color);
           }
+          // 初始尺寸
           if (size && color) {
             this.curSize = findIndex(
               _.item.info[_.curColor].ItemList,
               (x) => x.size === size
             );
           }
+          // 初始數量
           if (number) {
             this.curNum = number;
           }
@@ -182,10 +211,15 @@ export default defineComponent({
       });
   },
   methods: {
+    /**
+     * 處理新增事件
+     */
     handleAdd() {
       if (this.curColor === null || this.curColor === undefined) return;
       if (this.curSize === null || this.curSize === undefined) return;
+      const _ = this;
 
+      // 更新購物車
       this.$store.dispatch("addToCart", {
         catagory: this.$route.query.catagory,
         ProductName: this.item.ProductName,
@@ -196,17 +230,31 @@ export default defineComponent({
         size: this.item.info[this.curColor].ItemList[this.curSize].size,
         info: this.item.info[this.curColor].ItemList[this.curSize],
       });
+
+      // 檢視新增提示
       this.toggleCart = true;
-      const _ = this;
       const timer = setTimeout(() => {
         _.toggleCart = false;
         clearTimeout(timer);
       }, 3000);
     },
+
+    /**
+     * 選擇顏色
+     *
+     * @param {number} id - 該顏色在陣列中的id
+     */
     selectColor(id) {
       this.curColor = id;
       this.selectSize();
     },
+
+    /**
+     * 選擇尺寸
+     *
+     * @param {number} id - 該尺寸在陣列中的id
+     * @param {booleab} flag - 是否可選
+     */
     selectSize(id, flag) {
       if (flag) return;
       if (id) this.curSize = id;
@@ -250,6 +298,18 @@ export default defineComponent({
       content: "NT$";
       font-size: 24px;
       margin-top: 5px;
+    }
+    &--activity {
+      position: relative;
+      & p {
+        margin: 0;
+        top: -24px;
+        right: 0;
+        position: absolute;
+        font-size: 22px;
+        color: $text-sub-color;
+        text-decoration: line-through;
+      }
     }
   }
   &__color {

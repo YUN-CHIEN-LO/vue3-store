@@ -1,6 +1,8 @@
 <template>
   <div class="navbar">
     <div class="navbar__row">
+      <!-- 搜尋 -->
+      <!-- [TODO] 沒有作用 -->
       <div class="navbar__search">
         <el-input v-model="search" size="mini" placeholder="SEARCH">
           <template #suffix>
@@ -10,6 +12,7 @@
       </div>
     </div>
     <div class="navbar__row">
+      <!-- 分類 -->
       <div class="navbar__tabs">
         <span v-for="(x, i) in tabs" :key="x" class="navbar__tabs__tab">
           <span
@@ -24,15 +27,17 @@
           >
         </span>
       </div>
+      <!-- 快捷鍵 -->
       <div class="navbar__shortcuts">
         <div class="navbar__shortcuts__shortcut">訂閱電子報</div>
         <p>|</p>
         <div class="navbar__shortcuts__shortcut">登入/註冊</div>
         <p>|</p>
+        <!-- 購物車 -->
         <el-popover
           placement="bottom-end"
-          :width="500"
           trigger="hover"
+          :width="500"
           :show-arrow="false"
         >
           <template #reference>
@@ -41,6 +46,7 @@
               {{ cart.length }} 個商品
             </div>
           </template>
+          <!-- 購物車內容 -->
           <el-table
             :data="cart"
             :cell-style="cellStyle"
@@ -55,6 +61,7 @@
             <el-table-column prop="size" label="尺寸" width="80" />
             <el-table-column prop="number" label="數量" width="80" />
           </el-table>
+          <!-- [TODO] 前往結帳按鈕無效 -->
           <div style="display: flex">
             <el-button type="primary" :style="btnStyle">前往結帳</el-button>
           </div>
@@ -89,9 +96,14 @@ export default defineComponent({
     ShoppingCart,
   },
   setup() {
+    // 使用中的分類
     const activeTab = ref("WOMEN");
+    // 分類陣列
     const tabs = ref(["WOMEN", "MEN", "KIDS", "BABY", "SPORTS"]);
+    // 搜尋關鍵字
     const search = ref("");
+
+    // 自訂義樣式
     const cellStyle = computed(() => ({
       fontSize: "14px",
       color: "#724b3d",
@@ -106,6 +118,7 @@ export default defineComponent({
       backgroundColor: "#724b3d",
       border: "none",
     }));
+
     return {
       activeTab,
       tabs,
@@ -117,9 +130,14 @@ export default defineComponent({
   },
   computed: { ...mapGetters(["cart"]) },
   methods: {
+    /**
+     * 處理切換分類頁籤事件
+     *
+     * @param {string} x - 頁籤
+     */
     handleActive(x) {
       this.activeTab = x;
-      this.$emit("change", x);
+      // 切換路由
       this.$router.push({
         path: "/",
         query: {
@@ -127,11 +145,21 @@ export default defineComponent({
         },
       });
     },
+
+    /**
+     * 處理點擊購物車項目事件
+     *
+     * @param {object} row - 列物件
+     * @param {object} column - 欄物件
+     * @param {object} cell - 格物件
+     * @param {event} event - 事件
+     */
     handleClickCell(row, column, cell, event) {
       event.stopPropagation();
 
+      // 若點擊產品名稱
       if (column.property === "ProductName") {
-        console.log(row);
+        // 切換路由，注意，路由攜帶該購物車項目的條件
         this.$router.push({
           path: "/shop",
           query: {

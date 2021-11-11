@@ -10,8 +10,7 @@ const routes = [
   {
     path: "/shop",
     name: "Shop",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Shop.vue"),
+    component: () => import("../views/Shop.vue"),
   },
   {
     path: "/error",
@@ -26,6 +25,7 @@ const router = createRouter({
 });
 
 router.beforeEach(() => {
+  // 捲動到頁頂
   window.scrollTo(0, 0);
 });
 

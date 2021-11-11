@@ -19,9 +19,13 @@ export default {
     catagory: String,
   },
   setup(props) {
+    // 顯示的產品
     const list = ref([]);
+    // 產品分頁
     const pageIndex = ref(1);
+    // 是否顯示所有產品
     const endFlag = ref(false);
+    // 分類圖片
     const banner = ref({
       WOMEN:
         "https://s3.lativ.com.tw/i/NewArrivalBanner/54261_1010X400_211101_TW.jpg",
@@ -45,10 +49,41 @@ export default {
     this.$nextTick(() => {
       window.document.addEventListener("scroll", debounce(this.onScroll, 1000));
     });
+    // 取得第一頁產品
     this.getLativ(this.pageIndex);
   },
   methods: {
+    /**
+     * 取得產品
+     *
+     * @param {number} pageIndex - 頁碼
+     */
+    getLativ(pageIndex) {
+      const _ = this;
+      const catagory = this.$route.query.catagory;
+      api.lativ
+        .getLativ({
+          catagory: catagory,
+          pageIndex: pageIndex,
+        })
+        .then((res) => {
+          if (res.data.length === 0) {
+            // 若返回空陣列，表示已經返回所有產品
+            this.endFlag = true;
+          } else {
+            // 擴充產品陣列
+            _.list = concat(_.list, res.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    /**
+     * 檢視產品
+     */
     viewShop(x) {
+      // 切換路由
       this.$router.push({
         path: "/shop",
         query: {
@@ -67,25 +102,6 @@ export default {
       if (currentScroll + modifier > documentHeight && !this.endFlag) {
         this.getLativ(this.pageIndex++);
       }
-    },
-    getLativ(pageIndex) {
-      const _ = this;
-      const catagory = this.$route.query.catagory;
-      api.lativ
-        .getLativ({
-          catagory: catagory,
-          pageIndex: pageIndex,
-        })
-        .then((res) => {
-          if (res.data.length === 0) {
-            this.endFlag = true;
-          } else {
-            _.list = concat(_.list, res.data);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
     },
   },
 };
