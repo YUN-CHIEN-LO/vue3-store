@@ -17,6 +17,7 @@ const routes = [
     name: "Error",
     component: () => import("../views/Error.vue"),
   },
+  { path: "*", redirect: "/" },
 ];
 
 const router = createRouter({
